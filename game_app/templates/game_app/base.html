@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predinator Game</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { max-width: 800px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #333; }
+        .button-group button, .button-group input[type="submit"] {
+            background-color: #5cb85c; color: white; border: none; padding: 10px 15px;
+            margin: 5px; border-radius: 4px; cursor: pointer; font-size: 1em;
+        }
+        .button-group button:hover, .button-group input[type="submit"]:hover { background-color: #4cae4c; }
+        .button-group .no-button { background-color: #d9534f; }
+        .button-group .no-button:hover { background-color: #c9302c; }
+        .button-group .dk-button { background-color: #f0ad4e; }
+        .button_group .dk-button:hover { background-color: #ec971f; }
+        .reset-link { display: block; margin-bottom: 20px; text-align: right; }
+        input[type="text"], textarea { width: calc(100% - 22px); padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .error-message { color: red; font-weight: bold; margin-bottom: 10px; }
+        hr { margin: 20px 0; border: 0; border-top: 1px solid #eee; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Predinator</h1>
+        <div class="reset-link">
+            <a href="{% url 'game_app:reset_game' %}" class="button-group dk-button" style="text-decoration: none;">Reset & New Game</a>
+        </div>
+        <hr>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

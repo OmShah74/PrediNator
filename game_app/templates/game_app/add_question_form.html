@@ -1,0 +1,64 @@
+{% extends "game_app/base.html" %}
+
+{% block content %}
+    <h2>Add New Distinguishing Question</h2>
+
+    {% if form_error %}
+        <p class="error-message">{{ form_error }}</p>
+    {% endif %}
+
+    <p>You were thinking of: <strong>{{ learn_info.actual_celebrity }}</strong></p>
+    {% if learn_info.guessed_celebrity %}
+        <p>My previous guess was: <strong>{{ learn_info.guessed_celebrity }}</strong></p>
+    {% else %}
+        <p>I couldn't make a guess before.</p>
+    {% endif %}
+    <hr>
+
+    <form method="post" action="{% url 'game_app:submit_new_question' %}">
+        {% csrf_token %}
+        <div>
+            <label for="new_question_text">New Question Text (e.g., "Is your character known for wearing a hat?"):</label>
+            <input type="text" id="new_question_text" name="new_question_text" size="60" required>
+        </div>
+        <div>
+            <label for="new_question_id">New Question ID (short, unique, lowercase, no spaces, e.g., 'wears_hat'):</label>
+            <input type="text" id="new_question_id" name="new_question_id" pattern="[a-z0-9_]+" title="Lowercase letters, numbers, and underscores only." required>
+        </div>
+        <hr>
+        <div>
+            <label for="answer_for_actual">Answer to this new question for "<strong>{{ learn_info.actual_celebrity }}</strong>" (yes/no/dontknow):</label>
+            <select id="answer_for_actual" name="answer_for_actual" required>
+                <option value="">-- Select --</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+                <option value="dontknow">Don't Know</option>
+            </select>
+        </div>
+
+        {% if learn_info.guessed_celebrity %}
+        <div>
+            <label for="answer_for_guessed">Answer to this new question for "<strong>{{ learn_info.guessed_celebrity }}</strong>" (yes/no/dontknow):</label>
+             <select id="answer_for_guessed" name="answer_for_guessed" required>
+                <option value="">-- Select --</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+                <option value="dontknow">Don't Know</option>
+            </select>
+        </div>
+        {% else %}
+            <!-- If no guess was made, we still need to submit something for this field, or handle it in the view -->
+            <input type="hidden" name="answer_for_guessed" value="dontknow">
+        {% endif %}
+        <hr>
+        <p>After adding this question, I will also ask other standard questions about "<strong>{{ learn_info.actual_celebrity }}</strong>" to complete its profile.</p>
+        <br>
+        <div class="button-group">
+            <button type="submit">Add Question and Learn Character</button>
+        </div>
+    </form>
+    <hr>
+    <div class="button-group">
+        <a href="{% url 'game_app:learn_feedback' %}" style="text-decoration: none;"><button class="dk-button">Cancel and Go Back</button></a>
+    </div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "game_app/base.html" %}
+
+{% block content %}
+  <h2>Oops! Something went wrong.</h2>
+  <p class="error-message">{{ message|default:"An unexpected error occurred. Please try again." }}</p>
+  <hr>
+  <div class="button-group">
+    <a href="{% url 'game_app:play' %}" style="text-decoration: none;"><button>Try Starting a New Game</button></a>
+  </div>
+{% endblock %}

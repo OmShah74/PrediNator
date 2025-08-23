@@ -1,0 +1,36 @@
+{% extends "game_app/base.html" %}
+
+{% block content %}
+    <h2>Question:</h2>
+    <p style="font-size: 1.2em; margin-bottom: 20px;">{{ question_text }}</p>
+
+    <form method="post" action="{% url 'game_app:answer' %}" class="button-group">
+        {% csrf_token %}
+        {# Ensure the 'value' attribute is a simple string that answer_to_numeric can parse #}
+        {# The 'possible_answers' from Question object should already be ['yes', 'no', 'dontknow'] or similar #}
+
+        {% for ans_val_internal in possible_answers %} {# e.g., ans_val_internal is 'yes', 'no', 'dontknow' #}
+            {% if ans_val_internal == "yes" %}
+                <button type="submit" name="answer" value="yes">Yes</button>
+            {% elif ans_val_internal == "no" %}
+                <button type="submit" name="answer" value="no" class="no-button">No</button>
+            {% elif ans_val_internal == "dontknow" %} {# Match the string from your Question objects #}
+                <button type="submit" name="answer" value="dont know" class="dk-button">Don't Know</button>
+            {% else %}
+                 {# Fallback for any other answer types, though you primarily use 3 #}
+                 <button type="submit" name="answer" value="{{ ans_val_internal }}">{{ ans_val_internal|capfirst }}</button>
+            {% endif %}
+        {% endfor %}
+    </form>
+
+    {# Debug: Display current session state (Remove for production) #}
+    {# <hr><p><strong>Debug Session State:</strong></p>
+    <pre>
+        Game Active: {{ request.session.akinator_game_active }}
+        Feedback Mode: {{ request.session.akinator_feedback_mode }}
+        Current Node ID: {{ request.session.akinator_current_node_id }}
+        Model ID: {{ request.session.akinator_model_id }}
+        Last Guess: {{ request.session.akinator_last_guess }}
+        Path Taken: {{ request.session.akinator_path_taken|safe }}
+    </pre> #}
+{% endblock %}

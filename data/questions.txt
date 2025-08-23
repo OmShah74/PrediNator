@@ -1,0 +1,33 @@
+attribute_id::question_text::possible_answers
+is_male::Is your character male?::Yes,No,DontKnow
+is_female::Is your character female?::Yes,No,DontKnow
+is_real_person::Is your character a real person (not fictional)?::Yes,No,DontKnow
+is_fictional::Is your character fictional?::Yes,No,DontKnow
+is_american::Is your character American?::Yes,No,DontKnow
+is_european::Is your character European?::Yes,No,DontKnow
+is_asian::Is your character Asian?::Yes,No,DontKnow
+is_actor::Is your character primarily known as an actor/actress?::Yes,No,DontKnow
+is_singer::Is your character primarily known as a singer?::Yes,No,DontKnow
+is_musician::Is your character primarily known as a musician (plays an instrument)?::Yes,No,DontKnow
+is_politician::Is your character a politician?::Yes,No,DontKnow
+is_athlete::Is your character an athlete?::Yes,No,DontKnow
+is_scientist::Is your character a scientist?::Yes,No,DontKnow
+is_writer::Is your character a writer/author?::Yes,No,DontKnow
+is_alive::Is your character currently alive?::Yes,No,DontKnow
+died_before_2000::Did your character die before the year 2000?::Yes,No,DontKnow
+born_after_1980::Was your character born after 1980?::Yes,No,DontKnow
+has_dark_hair::Does your character usually have dark hair (black/brown)?::Yes,No,DontKnow
+has_blonde_hair::Does your character usually have blonde hair?::Yes,No,DontKnow
+has_red_hair::Does your character usually have red hair?::Yes,No,DontKnow
+wears_glasses::Does your character often wear glasses?::Yes,No,DontKnow
+has_facial_hair::Does your character often have facial hair (beard/mustache)?::Yes,No,DontKnow
+won_oscar::Has your character won an Academy Award (Oscar)?::Yes,No,DontKnow
+won_grammy::Has your character won a Grammy Award?::Yes,No,DontKnow
+starred_in_marvel_movie::Has your character starred in a Marvel movie?::Yes,No,DontKnow
+starred_in_dc_movie::Has your character starred in a DC movie?::Yes,No,DontKnow
+known_for_comedy::Is your character known for comedy?::Yes,No,DontKnow
+from_usa_movie::Is your character from a movie primarily made in the USA?::Yes,No,DontKnow
+from_tv_show::Is your character primarily known from a TV show?::Yes,No,DontKnow
+has_superpowers::Does your character have superpowers (if fictional)?::Yes,No,DontKnow
+is_humanoid::Is your character humanoid (if fictional)?::Yes,No,DontKnow
+is_animal::Is your character an animal (or animal-like)?::Yes,No,DontKnow

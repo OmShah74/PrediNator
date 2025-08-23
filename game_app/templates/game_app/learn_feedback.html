@@ -1,0 +1,54 @@
+{% extends "game_app/base.html" %}
+
+{% block content %}
+    {% if error_message %}
+        <p class="error-message">{{ error_message }}</p>
+    {% endif %}
+
+    {% if last_guess %}
+        <h2>My guess was: <strong style="color: #337ab7;">{{ last_guess }}</strong></h2>
+        <form method="post" action="{% url 'game_app:process_learning' %}" class="button-group">
+            {% csrf_token %}
+            <p>Was my guess correct?</p>
+            <button type="submit" name="action" value="correct_guess">Yes, Correct!</button>
+            <hr>
+            <p>No, it was someone else:</p>
+            <div>
+                <label for="actual_celebrity_name_incorrect">Who were you thinking of?</label>
+                <input type="text" id="actual_celebrity_name_incorrect" name="actual_celebrity_name" placeholder="Enter character's name" required>
+            </div>
+            <div>
+                <p>How should I learn about this character?</p>
+                <label>
+                    <input type="radio" name="add_new_question_option" value="yes" checked>
+                    Add a new distinguishing question first (Recommended if I was close or confused)
+                </label>
+                <br>
+                <label>
+                    <input type="radio" name="add_new_question_option" value="no">
+                    Just learn this character with the current questions (Use if character is very different or new)
+                </label>
+            </div>
+            <br>
+            <button type="submit" name="action" value="incorrect_guess">Submit Incorrect Character</button>
+        </form>
+    {% elif game_ended_no_guess %}
+        <h2>I couldn't make a guess!</h2>
+        <p>I need more information or the character might be new to me.</p>
+        <p>Would you like to teach me who you were thinking of?</p>
+         <form method="post" action="{% url 'game_app:process_learning' %}" class="button-group">
+            {% csrf_token %}
+            <div>
+                <label for="actual_celebrity_name_no_guess">Who were you thinking of?</label>
+                <input type="text" id="actual_celebrity_name_no_guess" name="actual_celebrity_name" placeholder="Enter character's name" required>
+            </div>
+            <button type="submit" name="action" value="no_guess_learn">Add this Character (I'll ask questions)</button>
+        </form>
+    {% else %}
+        <h2>Game Over or Unknown State</h2>
+        <p>Let's start a new game!</p>
+        <div class="button-group">
+             <a href="{% url 'game_app:reset_game' %}" style="text-decoration: none;"><button>Play Again</button></a>
+        </div>
+    {% endif %}
+{% endblock %}

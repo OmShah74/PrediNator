@@ -1,0 +1,40 @@
+{% extends "game_app/base.html" %}
+
+{% block content %}
+    <h2>Teach Me About: <strong style="color: #337ab7;">{{ celebrity_name }}</strong></h2>
+
+    {% if error_message %}
+        <p class="error-message">{{ error_message }}</p>
+    {% endif %}
+
+    <p>Please answer the following questions about "{{ celebrity_name }}".</p>
+    <form method="post" action="{% url 'game_app:process_learning' %}"> {# Or a new URL for submitting these attributes #}
+        {% csrf_token %}
+        {# These hidden fields carry over necessary info #}
+        <input type="hidden" name="action" value="{{ form_action }}"> {# e.g., "submit_new_celebrity_attributes" #}
+        <input type="hidden" name="actual_celebrity_name" value="{{ celebrity_name }}">
+        {% if game_path_json %}
+            <input type="hidden" name="game_path_json" value="{{ game_path_json }}">
+        {% endif %}
+         {% if new_question_info_json %}
+            <input type="hidden" name="new_question_info_json" value="{{ new_question_info_json }}">
+        {% endif %}
+
+
+        {% for question in questions_to_ask %}
+            <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #eee; border-radius: 4px;">
+                <label for="attr_{{ question.attribute_id }}">{{ question.text }}</label>
+                <select id="attr_{{ question.attribute_id }}" name="attr_{{ question.attribute_id }}" required>
+                    <option value="">-- Select --</option>
+                    <option value="yes" {% if question.current_answer == 1.0 %}selected{% endif %}>Yes</option>
+                    <option value="no" {% if question.current_answer == 0.0 %}selected{% endif %}>No</option>
+                    <option value="dontknow" {% if question.current_answer_is_nan %}selected{% endif %}>Don't Know</option>
+                </select>
+            </div>
+        {% endfor %}
+        <hr>
+        <div class="button-group">
+            <button type="submit">Save Attributes for {{ celebrity_name }}</button>
+        </div>
+    </form>
+{% endblock %}
