@@ -1,11 +1,18 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 import os
+
 DATA_DIR = 'data'
 QUESTIONS_FILE_PATH = os.path.join(DATA_DIR, 'questions.txt')
 CELEBRITIES_FILE_PATH = os.path.join(DATA_DIR, 'celebrities.parquet')
 
 def generate_questions_file():
+    """
+    Generates the questions.txt file which serves as the master list of all
+    possible questions the game can ask.
+    """
+    # The 'DontKnow' option is kept in the text file for the user interface,
+    # but our dataset will not contain 'Don't Know' values for training.
     questions_content = """attribute_id::question_text::possible_answers
 is_male::Is your character male?::Yes,No,DontKnow
 is_female::Is your character female?::Yes,No,DontKnow
@@ -46,73 +53,102 @@ is_animal::Is your character an animal (or animal-like)?::Yes,No,DontKnow
     print(f"Generated {QUESTIONS_FILE_PATH}")
 
 def generate_celebrities_parquet():
-    data = {
-        'CelebrityName': [
-            'Tom Hanks', 'Scarlett Johansson', 'Taylor Swift', 'Leonardo DiCaprio', 'Dwayne Johnson',
-            'Elvis Presley', 'Meryl Streep', 'Will Smith', 'Albert Einstein', 'Marie Curie',
-            'Serena Williams', 'Michael Jordan', 'Queen Elizabeth II', 'Donald Trump', 'Spider-Man',
-            'Wonder Woman', 'Harry Potter', 'Mickey Mouse', 'Pikachu', 'William Shakespeare', 'Cleopatra',
-            'Elon Musk', 'Oprah Winfrey', 'Keanu Reeves', 'Bill Gates' # Added a few more
-        ]
-    }
-    df = pd.DataFrame(data)
+    """
+    Generates the celebrities.parquet file.
 
+    This function now ensures every character has a definitive 1.0 (Yes) or 0.0 (No)
+    for every single question, creating a complete and consistent dataset
+    perfect for training a high-quality decision tree.
+    """
+    # This dictionary is the source of truth. 1.0 means "Yes".
+    # Any question not listed for a character will automatically be "No" (0.0).
+    characters = {
+        # Actors & Actresses
+        'Tom Hanks': {'is_male': 1.0, 'is_real_person': 1.0, 'is_american': 1.0, 'is_actor': 1.0, 'is_alive': 1.0, 'won_oscar': 1.0, 'has_dark_hair': 1.0, 'known_for_comedy': 1.0, 'from_usa_movie': 1.0},
+        'Scarlett Johansson': {'is_female': 1.0, 'is_real_person': 1.0, 'is_american': 1.0, 'is_actor': 1.0, 'is_alive': 1.0, 'starred_in_marvel_movie': 1.0, 'born_after_1980': 1.0, 'has_blonde_hair': 1.0, 'from_usa_movie': 1.0},
+        'Leonardo DiCaprio': {'is_male': 1.0, 'is_real_person': 1.0, 'is_american': 1.0, 'is_actor': 1.0, 'is_alive': 1.0, 'won_oscar': 1.0, 'has_blonde_hair': 1.0, 'from_usa_movie': 1.0},
+        'Meryl Streep': {'is_female': 1.0, 'is_real_person': 1.0, 'is_american': 1.0, 'is_actor': 1.0, 'is_alive': 1.0, 'won_oscar': 1.0, 'has_blonde_hair': 1.0, 'from_usa_movie': 1.0},
+        'Will Smith': {'is_male': 1.0, 'is_real_person': 1.0, 'is_american': 1.0, 'is_actor': 1.0, 'is_alive': 1.0, 'known_for_comedy': 1.0, 'from_usa_movie': 1.0, 'is_singer': 1.0},
+        'Robert Downey Jr.': {'is_male': 1.0, 'is_real_person': 1.0, 'is_american': 1.0, 'is_actor': 1.0, 'is_alive': 1.0, 'starred_in_marvel_movie': 1.0, 'has_dark_hair': 1.0, 'from_usa_movie': 1.0},
+        'Keanu Reeves': {'is_male': 1.0, 'is_real_person': 1.0, 'is_actor': 1.0, 'is_alive': 1.0, 'has_dark_hair': 1.0, 'starred_in_dc_movie': 1.0, 'from_usa_movie': 1.0},
+        'Dwayne Johnson': {'is_male': 1.0, 'is_real_person': 1.0, 'is_american': 1.0, 'is_actor': 1.0, 'is_alive': 1.0, 'is_athlete': 1.0, 'from_usa_movie': 1.0},
+
+        # Musicians
+        'Taylor Swift': {'is_female': 1.0, 'is_real_person': 1.0, 'is_american': 1.0, 'is_singer': 1.0, 'is_alive': 1.0, 'won_grammy': 1.0, 'born_after_1980': 1.0, 'has_blonde_hair': 1.0},
+        'Beyoncé': {'is_female': 1.0, 'is_real_person': 1.0, 'is_american': 1.0, 'is_singer': 1.0, 'is_alive': 1.0, 'won_grammy': 1.0, 'has_dark_hair': 1.0, 'born_after_1980': 1.0},
+        'Ed Sheeran': {'is_male': 1.0, 'is_real_person': 1.0, 'is_european': 1.0, 'is_singer': 1.0, 'is_alive': 1.0, 'won_grammy': 1.0, 'has_red_hair': 1.0, 'wears_glasses': 1.0, 'born_after_1980': 1.0},
+        'Elvis Presley': {'is_male': 1.0, 'is_real_person': 1.0, 'is_american': 1.0, 'is_singer': 1.0, 'died_before_2000': 1.0, 'has_dark_hair': 1.0, 'won_grammy': 1.0},
+        'Michael Jackson': {'is_male': 1.0, 'is_real_person': 1.0, 'is_american': 1.0, 'is_singer': 1.0, 'has_dark_hair': 1.0, 'won_grammy': 1.0},
+
+        # Historical & Scientific Figures
+        'Albert Einstein': {'is_male': 1.0, 'is_real_person': 1.0, 'is_european': 1.0, 'is_scientist': 1.0, 'wears_glasses': 1.0, 'has_facial_hair': 1.0},
+        'Marie Curie': {'is_female': 1.0, 'is_real_person': 1.0, 'is_european': 1.0, 'is_scientist': 1.0, 'died_before_2000': 1.0, 'has_dark_hair': 1.0},
+        'William Shakespeare': {'is_male': 1.0, 'is_real_person': 1.0, 'is_european': 1.0, 'is_writer': 1.0, 'died_before_2000': 1.0, 'has_facial_hair': 1.0},
+        'Queen Elizabeth II': {'is_female': 1.0, 'is_real_person': 1.0, 'is_european': 1.0, 'is_politician': 1.0},
+        'Martin Luther King Jr.': {'is_male': 1.0, 'is_real_person': 1.0, 'is_american': 1.0, 'is_politician': 1.0, 'died_before_2000': 1.0, 'has_dark_hair': 1.0},
+
+        # Athletes
+        'Michael Jordan': {'is_male': 1.0, 'is_real_person': 1.0, 'is_american': 1.0, 'is_athlete': 1.0, 'is_alive': 1.0},
+        'Serena Williams': {'is_female': 1.0, 'is_real_person': 1.0, 'is_american': 1.0, 'is_athlete': 1.0, 'is_alive': 1.0, 'has_dark_hair': 1.0, 'born_after_1980': 1.0},
+        'Cristiano Ronaldo': {'is_male': 1.0, 'is_real_person': 1.0, 'is_european': 1.0, 'is_athlete': 1.0, 'is_alive': 1.0, 'has_dark_hair': 1.0, 'born_after_1980': 1.0},
+        'Lionel Messi': {'is_male': 1.0, 'is_real_person': 1.0, 'is_athlete': 1.0, 'is_alive': 1.0, 'has_dark_hair': 1.0, 'born_after_1980': 1.0},
+
+        # Fictional Characters (Live Action)
+        'Spider-Man': {'is_male': 1.0, 'is_fictional': 1.0, 'is_american': 1.0, 'has_superpowers': 1.0, 'starred_in_marvel_movie': 1.0, 'is_humanoid': 1.0, 'known_for_comedy': 1.0},
+        'Wonder Woman': {'is_female': 1.0, 'is_fictional': 1.0, 'has_superpowers': 1.0, 'starred_in_dc_movie': 1.0, 'is_humanoid': 1.0, 'has_dark_hair': 1.0},
+        'Iron Man': {'is_male': 1.0, 'is_fictional': 1.0, 'is_american': 1.0, 'has_superpowers': 1.0, 'starred_in_marvel_movie': 1.0, 'is_humanoid': 1.0, 'has_dark_hair': 1.0, 'has_facial_hair': 1.0},
+        'Batman': {'is_male': 1.0, 'is_fictional': 1.0, 'is_american': 1.0, 'starred_in_dc_movie': 1.0, 'is_humanoid': 1.0, 'has_dark_hair': 1.0},
+        'Harry Potter': {'is_male': 1.0, 'is_fictional': 1.0, 'is_european': 1.0, 'from_usa_movie': 1.0, 'is_humanoid': 1.0, 'has_dark_hair': 1.0, 'wears_glasses': 1.0, 'has_superpowers': 1.0},
+        'Katniss Everdeen': {'is_female': 1.0, 'is_fictional': 1.0, 'is_american': 1.0, 'from_usa_movie': 1.0, 'is_humanoid': 1.0, 'has_dark_hair': 1.0, 'is_athlete': 1.0},
+        'Darth Vader': {'is_male': 1.0, 'is_fictional': 1.0, 'from_usa_movie': 1.0, 'is_humanoid': 1.0, 'has_superpowers': 1.0},
+        'Yoda': {'is_male': 1.0, 'is_fictional': 1.0, 'from_usa_movie': 1.0, 'is_humanoid': 1.0, 'has_superpowers': 1.0},
+
+        # Fictional Characters (Animated)
+        'Pikachu': {'is_fictional': 1.0, 'is_animal': 1.0, 'is_asian': 1.0, 'has_superpowers': 1.0, 'from_tv_show': 1.0},
+        'Mickey Mouse': {'is_male': 1.0, 'is_fictional': 1.0, 'is_american': 1.0, 'is_animal': 1.0, 'from_tv_show': 1.0, 'known_for_comedy': 1.0},
+        'Homer Simpson': {'is_male': 1.0, 'is_fictional': 1.0, 'is_american': 1.0, 'from_tv_show': 1.0, 'is_humanoid': 1.0, 'known_for_comedy': 1.0},
+        'Elsa': {'is_female': 1.0, 'is_fictional': 1.0, 'from_usa_movie': 1.0, 'is_humanoid': 1.0, 'has_blonde_hair': 1.0, 'has_superpowers': 1.0, 'is_singer': 1.0},
+        'Shrek': {'is_male': 1.0, 'is_fictional': 1.0, 'from_usa_movie': 1.0, 'is_humanoid': 1.0, 'known_for_comedy': 1.0},
+    }
+
+    # Get the master list of all possible attribute IDs from the questions file
     attribute_ids = []
     with open(QUESTIONS_FILE_PATH, 'r') as f:
-        next(f) # Skip header
+        next(f)  # Skip the header line
         for line in f:
             line = line.strip()
             if line:
-                attr_id = line.split('::')[0]
-                attribute_ids.append(attr_id)
-                df[attr_id] = np.nan # Initialize all with DontKnow
+                attribute_ids.append(line.split('::')[0])
 
-    # --- Populate with SOME sample data (Yes=1.0, No=0.0, DontKnow=np.nan) ---
-    # This is tedious and error-prone for many entries. A database or structured input source is better for large scale.
-    
-    # Tom Hanks
-    df.loc[df['CelebrityName'] == 'Tom Hanks', ['is_male', 'is_real_person', 'is_american', 'is_actor', 'is_alive', 'won_oscar', 'has_dark_hair']] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-    df.loc[df['CelebrityName'] == 'Tom Hanks', ['is_female','is_fictional', 'is_singer', 'is_politician', 'has_superpowers', 'born_after_1980']] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-
-    # Scarlett Johansson
-    df.loc[df['CelebrityName'] == 'Scarlett Johansson', ['is_female', 'is_real_person', 'is_american', 'is_actor', 'is_alive', 'starred_in_marvel_movie', 'born_after_1980']] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-    df.loc[df['CelebrityName'] == 'Scarlett Johansson', ['is_male', 'is_fictional', 'won_oscar', 'has_blonde_hair']] = [0.0, 0.0, 0.0, 1.0] # Assuming typically blonde for roles
-
-    # Taylor Swift
-    df.loc[df['CelebrityName'] == 'Taylor Swift', ['is_female', 'is_real_person', 'is_american', 'is_singer', 'is_alive', 'won_grammy', 'born_after_1980', 'has_blonde_hair']] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-    df.loc[df['CelebrityName'] == 'Taylor Swift', ['is_male', 'is_fictional', 'is_actor']] = [0.0, 0.0, 0.0]
-
-    # Albert Einstein
-    df.loc[df['CelebrityName'] == 'Albert Einstein', ['is_male', 'is_real_person', 'is_european', 'is_scientist', 'died_before_2000', 'wears_glasses']] = [1.0, 1.0, 1.0, 1.0, 0.0, 1.0]
-    df.loc[df['CelebrityName'] == 'Albert Einstein', ['is_fictional', 'is_alive', 'is_american', 'born_after_1980']] = [0.0, 0.0, 0.0, 0.0]
-
-    # Spider-Man
-    df.loc[df['CelebrityName'] == 'Spider-Man', ['is_male', 'is_fictional', 'is_american', 'has_superpowers', 'starred_in_marvel_movie', 'is_humanoid']] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-    df.loc[df['CelebrityName'] == 'Spider-Man', ['is_real_person', 'won_oscar', 'is_alive']] = [0.0, 0.0, np.nan] # Fictional "aliveness"
-
-    # Keanu Reeves
-    df.loc[df['CelebrityName'] == 'Keanu Reeves', ['is_male', 'is_real_person', 'is_actor', 'is_alive', 'has_dark_hair', 'starred_in_dc_movie']] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0] # Constantine (DC-ish) / Matrix
-    df.loc[df['CelebrityName'] == 'Keanu Reeves', ['is_female', 'is_fictional', 'is_american', 'won_oscar', 'born_after_1980']] = [0.0, 0.0, 0.0, 0.0, 0.0] # Born 1964, Canadian
-
-    # Fill remaining specified characters attributes with 0.0 if not 1.0 or np.nan (for this small sample)
-    # For a large dataset, meticulous data entry or sophisticated imputation is needed for NaNs.
-    populated_celebs = ['Tom Hanks', 'Scarlett Johansson', 'Taylor Swift', 'Albert Einstein', 'Spider-Man', 'Keanu Reeves']
-    for celeb_name in populated_celebs:
+    # Build the list of records for the DataFrame
+    records = []
+    for name, answered_yes_attrs in characters.items():
+        record = {'CelebrityName': name}
         for attr_id in attribute_ids:
-            if pd.isna(df.loc[df['CelebrityName'] == celeb_name, attr_id].iloc[0]):
-                df.loc[df['CelebrityName'] == celeb_name, attr_id] = 0.0 # Default to No if not specified Yes or Dk
+            # If the attribute is in the character's dictionary, it's a 1.0 (Yes).
+            # Otherwise, it's a 0.0 (No). This ensures no missing values.
+            if attr_id in answered_yes_attrs:
+                record[attr_id] = 1.0
+            else:
+                record[attr_id] = 0.0
+        records.append(record)
+    
+    # Create the final DataFrame from the records
+    df = pd.DataFrame(records)
 
-    # Ensure all attribute columns are float to handle np.nan
+    # Ensure all attribute columns are of type float
     for col in attribute_ids:
         df[col] = df[col].astype(float)
 
+    # Save the complete and consistent dataset to a parquet file
     df.to_parquet(CELEBRITIES_FILE_PATH, index=False, engine='pyarrow')
-    print(f"Generated sample {CELEBRITIES_FILE_PATH} with {len(df)} celebrities and {len(attribute_ids)} attributes.")
-    print("IMPORTANT: This is a very small, illustrative sample. For the project's goal of ~1000 celebrities,")
-    print("you MUST extensively populate 'celebrities.parquet' with accurate data for each character.")
+    print(f"Generated {CELEBRITIES_FILE_PATH} with {len(df)} celebrities.")
+    print("Dataset is now complete: every character has a 'Yes' (1.0) or 'No' (0.0) for all questions.")
 
 if __name__ == "__main__":
     generate_questions_file()
     generate_celebrities_parquet()
-    print("\nSample data generation complete.")
-    print("Run 'python main_cli.py' to use the application.")
+    print("\n--------------------------------------------------")
+    print("Sample data generation complete.")
+    print("Next Step: Run 'python train_model.py' to build the decision tree model from this new data.")
+    print("--------------------------------------------------")

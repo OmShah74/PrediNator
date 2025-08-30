@@ -21,12 +21,12 @@
                 <p>How should I learn about this character?</p>
                 <label>
                     <input type="radio" name="add_new_question_option" value="yes" checked>
-                    Add a new distinguishing question first (Recommended if I was close or confused)
+                    Add a new distinguishing question first (Recommended)
                 </label>
                 <br>
                 <label>
                     <input type="radio" name="add_new_question_option" value="no">
-                    Just learn this character with the current questions (Use if character is very different or new)
+                    Just learn this character with the current questions
                 </label>
             </div>
             <br>
@@ -34,7 +34,7 @@
         </form>
     {% elif game_ended_no_guess %}
         <h2>I couldn't make a guess!</h2>
-        <p>I need more information or the character might be new to me.</p>
+        <p>I ran out of questions for that path. The character might be new to me.</p>
         <p>Would you like to teach me who you were thinking of?</p>
          <form method="post" action="{% url 'game_app:process_learning' %}" class="button-group">
             {% csrf_token %}
@@ -42,12 +42,13 @@
                 <label for="actual_celebrity_name_no_guess">Who were you thinking of?</label>
                 <input type="text" id="actual_celebrity_name_no_guess" name="actual_celebrity_name" placeholder="Enter character's name" required>
             </div>
-            <button type="submit" name="action" value="no_guess_learn">Add this Character (I'll ask questions)</button>
+            <button type="submit" name="action" value="no_guess_learn">Add this Character</button>
         </form>
     {% else %}
         <h2>Game Over or Unknown State</h2>
         <p>Let's start a new game!</p>
         <div class="button-group">
+             <!-- CORRECTED: This button MUST point to the reset view for a clean start -->
              <a href="{% url 'game_app:reset_game' %}" style="text-decoration: none;"><button>Play Again</button></a>
         </div>
     {% endif %}
