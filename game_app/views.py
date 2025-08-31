@@ -146,21 +146,25 @@ def process_learning_view(request):
             game_path_answers=json.loads(request.POST.get('game_path_json', '{}')),
             all_submitted_attributes=all_submitted_attrs
         )
+        
+        # --- CRITICAL CHANGE FOR GRACEFUL FAILURE ---
         if success:
             messages.success(request, f"Successfully learned about '{actual_celebrity_name}' and retrained the model!")
-            request.session['akinator_model_id'] = None # Invalidate model ID to force reset on next game
+            request.session['akinator_model_id'] = None # Invalidate model ID to force a fresh game state
         else:
-            messages.error(request, f"Failed to learn about '{actual_celebrity_name}'. Please check server logs.")
-        
+            messages.error(request, f"Failed to learn about '{actual_celebrity_name}'. The existing model is still active. Please check server logs for details.")
+            # Do NOT redirect to reset. Redirect to the main play page so the user can continue.
+            request.session.pop('context_for_attribute_form', None)
+            return redirect('game_app:play') # Go back to the game with the old model
+
         request.session.pop('context_for_attribute_form', None)
-        return redirect('game_app:reset_game')
+        return redirect('game_app:reset_game') # Only reset if learning was successful
     
     messages.warning(request, "Could not process the request.")
     return redirect('game_app:reset_game')
 
 
 def learn_attributes_view(request):
-    """ Renders the form to collect all attributes for a new celebrity. """
     context = request.session.get('context_for_attribute_form')
     if not context:
         messages.error(request, "Cannot collect attributes: information missing from session. Please start over.")
@@ -229,9 +233,6 @@ def submit_new_question_view(request):
 # --- Utility View ---
 
 def reset_game_view(request):
-    """
-    Clears all game-related session keys to start a fresh game.
-    """
     print(f"[{time.ctime()}] VIEWS: reset_game_view - Clearing all game-related session keys.")
     
     keys_to_clear = [
